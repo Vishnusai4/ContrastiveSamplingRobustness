@@ -381,7 +381,7 @@ def main():
             if args.mixup:
                 X, y_a, y_b, lam = mixup_data(X, y, args.mixup_alpha)
                 X, y_a, y_b = map(Variable, (X, y_a, y_b))
-            lr = lr_schedule(epoch + (i + 1) / len(train_batches))
+            lr = lr_schedule(epoch + (i + 1) / len(train_loader))
             opt.param_groups[0].update(lr=lr)
 
             if args.attack == 'pgd':
