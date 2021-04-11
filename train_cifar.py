@@ -127,7 +127,7 @@ def attack_pgd(model, X, y, epsilon, alpha, attack_iters, restarts,
         delta = clamp(delta, lower_limit-X, upper_limit-X)
         delta.requires_grad = True
         for _ in range(attack_iters):
-            output,features = model(normalize(X + delta))
+            output,features = model(X + delta)
             #Adding self-supervised output 
             out_con = model.con_pred(features)
             if early_stop:
@@ -166,7 +166,7 @@ def attack_pgd(model, X, y, epsilon, alpha, attack_iters, restarts,
             all_loss = mixup_criterion(criterion, model(normalize(X+delta)), y_a, y_b, lam)
         else:
            #Adding self-supervised loss here too
-            out, features = model(normalize(X+delta))
+            out, features = model(X+delta)
             con_f = model.con_pred(features)
             all_loss = F.cross_entropy(out, y, reduction='none')
             co_logits, co_labels = info_nce_loss(features)
@@ -399,7 +399,7 @@ def main():
                 delta = torch.zeros_like(X)
 
             #Add self-supervised output here
-            robust_output,robust_features = model(normalize(torch.clamp(X + delta[:X.size(0)], min=lower_limit, max=upper_limit)))
+            robust_output,robust_features = model(torch.clamp(X + delta[:X.size(0)], min=lower_limit, max=upper_limit))
             robust_con_output = model.con_pred(robust_features)
             robust_logits, robust_labels = info_nce_loss(robust_con_output)
 
@@ -419,7 +419,7 @@ def main():
             robust_loss.backward()
             opt.step()
             #Adding self-supervised loss for regular images
-            output,features = model(normalize(X))
+            output,features = model(X)
             con_output = model.con_pred(features)
             logits, labels = info_nce_loss(con_output)
             if args.mixup:
@@ -453,14 +453,14 @@ def main():
                 delta = attack_pgd(model, X, y, epsilon, pgd_alpha, args.attack_iters, args.restarts, args.norm, early_stop=args.eval)
             delta = delta.detach()
             #Add self supervised based content here
-            robust_output,robust_features = model(normalize(torch.clamp(X + delta[:X.size(0)], min=lower_limit, max=upper_limit)))
+            robust_output,robust_features = model(torch.clamp(X + delta[:X.size(0)], min=lower_limit, max=upper_limit))
             robust_con_output = model.con_pred(robust_features)
             robust_logits,robust_labels = info_nce_loss(robust_con_output)
 
             robust_loss = criterion(robust_output, y)
             robust_loss += criterion(robust_logits,robust_labels)/2
 
-            output,features = model(normalize(X))
+            output,features = model(X)
             con_output = model.con_pred(features)
             logits,labels = info_nce_loss(con_output)
 
@@ -491,10 +491,10 @@ def main():
                     delta = attack_pgd(model, X, y, epsilon, pgd_alpha, args.attack_iters, args.restarts, args.norm, early_stop=args.eval)
                 delta = delta.detach()
 
-                robust_output = model(normalize(torch.clamp(X + delta[:X.size(0)], min=lower_limit, max=upper_limit)))
+                robust_output = model(torch.clamp(X + delta[:X.size(0)], min=lower_limit, max=upper_limit))
                 robust_loss = criterion(robust_output, y)
 
-                output = model(normalize(X))
+                output = model(X)
                 loss = criterion(output, y)
 
                 val_robust_loss += robust_loss.item() * y.size(0)
