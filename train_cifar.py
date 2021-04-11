@@ -461,7 +461,7 @@ def main():
             robust_loss += criterion(robust_logits,robust_labels)/2
 
             output,features = model(normalize(X))
-            con_output = model(features)
+            con_output = model.con_pred(features)
             logits,labels = info_nce_loss(con_output)
 
             loss = criterion(output, y)
