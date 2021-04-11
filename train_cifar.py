@@ -264,12 +264,12 @@ def main():
     test = dataset.get_val_dataset('cifar10',2)
 
     train_loader = torch.utils.data.DataLoader(
-        train, batch_size=arg.batch_size, shuffle=True,
-        num_workers=arg.batch_size*2, pin_memory=True, drop_last=True)
+        train, batch_size=args.batch_size, shuffle=True,
+        num_workers=args.batch_size*2, pin_memory=True, drop_last=True)
 
     test_loader = torch.utils.data.DataLoader(
-        test, batch_size=arg.batch_size, shuffle=True,
-        num_workers=arg.batch_size*2, pin_memory=True, drop_last=True)
+        test, batch_size=args.batch_size, shuffle=True,
+        num_workers=args.batch_size*2, pin_memory=True, drop_last=True)
 
     epsilon = (args.epsilon / 255.)
     pgd_alpha = (args.pgd_alpha / 255.)
