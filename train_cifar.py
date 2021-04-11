@@ -283,7 +283,7 @@ def main():
 
     # add additional head for self-supevised contrastive learning 
     model.con_pred = nn.Linear(512,128)
-    model = nn.DataParallel(model).cuda()
+    model = model.cuda()
     model.train()
 
     if args.l2:
@@ -444,8 +444,8 @@ def main():
         test_n = 0
         for i, batch in enumerate(test_loader):
             X, y = batch[0], batch[1]
-            X = torch.cat(X,0)
-            y = torch.cat([y,y],0)
+            X = torch.cat(X,0).cuda()
+            y = torch.cat([y,y],0).cuda()
             # Random initialization
             if args.attack == 'none':
                 delta = torch.zeros_like(X)
