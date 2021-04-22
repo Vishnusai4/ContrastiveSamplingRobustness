@@ -12,7 +12,7 @@ from torch.autograd import Variable
 
 import os
 
-from wideresnet import WideResNet
+#from wideresnet import WideResNet
 from preactresnet import PreActResNet18
 
 #From SIMCLR
